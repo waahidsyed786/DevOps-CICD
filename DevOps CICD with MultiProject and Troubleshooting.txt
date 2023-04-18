@@ -1,0 +1,489 @@
+DevOps CICD with MultiProject and Troubleshooting
+
+commands 
+
+### 1. Introduction 
+1. - Development Old Way
+	# pwd 
+
+	# certutil -hashfile Index.zip MD5
+	# md5sum Index.zip 
+
+### 2 - High Level
+
+2.  - Infrastructure of Data Center  ( 12 min)
+ -- Fail Over : 
+ -- cluster - High Availability cluster 
+ -- Diaster Recovery  ( Power Outages, Earthquakes, Psunami, Floods, War, Hacking, Human Error) 
+ 
+RealTime Error : Chown -R on a linux system 
+
+3. - Application Staging (6 min) 
+
+ -- Developer writes code ( java, python, php,  etc.) , push to Central Server (github)
+ -- Jenkins --> Maven --> Ansible --> ( Docker, Tomcat, Web Server) 
+
+  -- Dev, Staging, Production 
+  -- Dev, SIT (QA)  , UAT, Prod 
+  -- Development, System Integration testing, User Acceptance Testing, Production
+
+4. - App Release new Code ( 6 min) 
+  -- Payment Page --> ( Visa, Master Card) 
+  -- request for 3rd way (PayPal or Other) 
+  --  Code always be updated or changed
+
+### 3 -- LAB 
+
+5. Lab Planning (4 min) 
+ -- instances ( Git, Jenkins, Ansible, Maven, Tomcat, Docker, Apache, etc.,)
+	Please Terminal once job done. 
+
+ -- Own Laptop ( Virtual Box, Multi VMs)
+
+6. Register on AWS ( 4 min) 
+
+ -- AWS Free Tier , email ID, ( Sign Up) , Personal, debit card, Voice call, 
+ --Basic Support Free 
+
+7. Add user in AWS ( 5 min)
+ -- IAM ( Identity Access Management) 
+ -- Don't use root
+ -- user--> (admin, [check] console access, password, [check] new password while login)
+ -- N > n > N > Create 
+ -- AWS > Sign in > IAM User > (ID) , try to add MFA 
+ --  Permission to AdministratorAccess >> 
+ 
+8. Launch instances in AWS (22 min) 
+ -- AWS > N.Virginia > instances > Launch Instance > Jenkins > RHEL 9 > t2.micro > KP (devops) > 
+Create SG > (allow SSH traffic)  >> LAUNCH 
+----------------------------------------------------
+ MOBAXTERM, GitBash, Putt
+ -- Windows >> MobaXterm >> IP , ec2user , Pvt Key (.pem) > OK
+-- Session name  ( Jenkins) 
+
+--------------------------------------------------
+	-- run the commands given below 
+Web Browser ( Public IP : 80) not working 
+solution : 
+	-- change SG + add rule (80 ), anywhere 0000/0
+Web Browser ( Public IP : 80)  working 
+
+if Jenkins ( Public IP :8080) not working 
+solution : 
+	-- change SG + add rule (8080), anywhere 0000/0
+ Jenkins ( Public IP :8080)  working 
+
+[ Save > mySG ] 
+
+--------------------------------------------------
+Lauch new instance >> same as above 
+--------------------------------------------------
+VPC - just go through 
+ 
+
+Access instances : ( communication between instances)
+--------------------------------------------------
+
+9. Download OS boxes and Virtual Box ( 5 min)
+
+	-- OSBoxes  ( search in google)
+	-- Virtual box images >> Centos (redhat) 
+	--  download Centos9 server 
+  
+ install Virtual Box ( Oracle )
+	-- download and install 
+
+      C:\vagrant\centos9 -- DELL G
+
+10. Install VM Fresh and Jenkins (12 min) 
+	-- extract Centos9 from zip
+     Oracle VB: 
+ 
+	-- Name( Fresh) , Location( ), Linux, Redhat9
+	--  CPU(2) , RAM (1GB) 
+	ERROR	- if CPU (1), End Kernel Panic -- not syncing -- Fatal Exception
+
+	-- Use Existing V Drive ( Os Box Extracted)
+	-- Summary  , FINISH
+
+Settings : Network, Adapter1 > (check) Bridge Adapter
+
+if any doubts ( control pane, Network settings ) 
+
+Start > installation started > completed
+	login : root / OSBoxes.org -SUCCESS (CentOS9 server)
+	useradd tariq 
+	passwd tariq
+	passwd root
+	hostname -i
+	ip a or ip addr show 
+	cat /etc/sysconfig/network-scripts
+
+	nmcli connection show 
+	nmcli connection up enp0s3  -- SUCCESS
+	poweroff 
+		
+Create clone
+	Oracle VB > Clone > Jenkins > FOlder > Generate New > Full Clone > FINISH 
+
+	ANSIBLE
+	DOCKER 
+-----------------------------------------
+	root / new password
+	ip a 
+	nmcli connection up enp0s3 -- SUCCESS 
+	ip a 	
+--------------------------------------------
+	
+
+11. Fix the IP Address (15 min)
+	-- nmcli connection up enp0s3
+	-- ifconfig -a 
+	-- accesss : IP and root / pass :access denied 
+NOTE : does not allow the root access by default 
+	-- ssh : normal user / pass : access granted 
+	-- grep -i root /etc/ssh/sshd_config 
+	-- su -
+	-- grep -i root /etc/ssh/sshd_config
+		-- PermitRootLogin prohibit-password
+	--  vi /etc/ssh/sshd_config 
+		 -- Permit RootLogin yes
+	-- systemctl restart sshd	
+	-- reboot 
+network will disappear 
+-----------------------
+	root / pass 
+	# ifconfig -a   
+		-- no ip address
+	# ip a 
+		-- need to run for every  
+	# nmcli connection uo enp0s3
+	# ip a 
+	# ifconfig -a 
+Create a file named 
+	vim /etc/sysconfig/network-scripts/ifcfg-enp0s3
+
+		DEVICE="enp0s3"
+		ONBOOT=yes
+		NETBOOT=yes
+		BOOTPROTO=dhcp
+		TYPE=Ethernet
+		NAME="enp0s3"	
+	# reboot 
+-----------------------------
+	login : root /passwd
+	# ifconfig -a
+	# poweroff
+
+Clone the Virtual Machine : 
+	-- 
+
+MobaXterm -- read documentation - free, download & install 
+
+-------------------------------------
+
+12. Updting the system ( 4 min) 
+	# yum update
+	# poweroff
+
+13. Install Jenkins ( 14 min) 
+	-- google ( jenkins download ) 
+		-- centos 
+ Login to Centos9 : Start installing  root/pass 
+
+ Make Sure you have internet
+	# ping www.google.com
+
+
+
+	01- Change the Hostname ( hostnamectl set-hostname jenkins )
+	02- sudo wget -O /etc/yum.repos.d/jenkins.repo https://pkg.jenkins.io/redhat-stable/jenkins.repo
+	
+	check repo list 
+		-- yum repolist 
+Add key : 
+	03- sudo rpm --import https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+
+Install Open JDK : jenkins, Maven build by java,
+			 Ansible build by Python
+
+	04- yum install fontconfig java-11-openjdk
+	05- java --version
+	--------------------------
+	06- yum install jenkins
+	07- systemctl status jenkins.service
+	08- systemctl start jenkins.service
+	08- systemctl enable jenkins.service
+	09- systemctl status jenkins.service
+
+	-- hostname -i 
+	-- browser ( IP:8080) 
+ 
+	Firewall
+
+	01- systemctl stop firewalld.service
+	02- systemctl disable firewalld.service
+	03- systemctl status firewalld.service
+
+	-- hostname -i 
+	-- browser ( IP:8080) Same package as me 
+	
+	---get access to jenkins
+		-- login 
+		-- install suggested plugins
+				in python we call modules 
+	-- admin/pass/pass/full name/tareq@tareq.com
+	-- copy the URL 
+			Start using jenkins 
+ 
+
+ 
+	yum search jenkins --showduplicates
+	yum install jenkins-2.375.3-1.1.noarch
+
+
+14. Jenking Overview  (18 min)
+
+	Browser (IP:8080)
+	# hostname -i
+	# ifconfig -a
+	# ip a 
+	# ip addr show 
+	
++ New Task > freestyle (basic and powerful)
+		 pipeline 
+	
++ People  
++ Build History
++ Manage Jenkins 
+
+Plugin manager > remove ant plugin 
++ advanced Settings 
++ Manage Jenkins > Manage Nodes and Clouds
++ Manage Jenkins > Credentials > Add Credentials
+
+
+Project : 
+ + New Item : (Test-HelloWorld) FreeStyle 
+Dashboard : 
+	Description : 
+	Build Triggers 
+	Build Environment
+	Build Steps 
+		- Execute Shell
+			- echo 'uptime -p ' > test.txt
+			- echo "Hello World" >> test.txt
+			- cat test.txt
+	+ Apply and Save 
+	+ Build Now 
+	+ Workspace - for every task one workspace created by default 
+	+ console output 
+	+ /var/lib/jenkins/workspace 
+		+ test-HelloWorld (folder )
+				+ echo $(uptime -p) > test.txt
+	+ cd test-HelloWorld
+		- Test.txt
+
+	+ Post-Build Actions
+
+
+###4. Git and GitHub
+
+15. Installing Git on Windows and Linux ( 9 min) 
+	+ GitHub, GitLab, BigBucket
+ 
+ As developer point view: (Windows and Linux)
+	+ Create a new VM ( Oracle VB) - Git 
+	+ google ( git)
+	+ google (cmder) - Windows (Full) download, Extract Zip
+	+ Linux - root > 
+	
+		# hostnamectl set-hostname linux
+		# yum repolist 
+		# yum install git -y
+		# git status 
+		# cd /tmp
+		# mkdir demo 
+		# cd demo
+		# git init    ( /tmp/demo/.git)
+		# git status 
+	
+	+ Windows - Launch Cmder 
+		ls
+		cd ..
+		mkdir demo 
+		git status 
+		cd demo
+		git status
+		git init     	( initiates git repository) 
+			-- (master)
+		git status 
+		
+16. Register on GitHub ( 4 min)
+	
+	+ www.github.com
+		Signup  - your email 
+		password, username, 
+		y  > create account 
+
+	+ 2-5 team, student > continue 
+	+ Continue for Free
+	+ SUCCESS 
+
+17. Git Commands ( 13 min)
+
+	+ Working directory 
+		+ git add 
+	+ staging area
+		+ git commit 
+	+ local repo
+		+ git push 
+	+ Remote repo
+		+ git fetch
+	+ Local Repo
+		+  git checkout 
+		+  git merge 
+	+ working directory 
+
+ 
+		#git init  -> will initial branch on it as Working Direcotry 
+
+		#git clone https://xxx   ( Downloads the repo from a remote server 
+		#git status ( Shown the file in which stage ) 
+		#git add *  ( moving all from Working directory  to  Staging area  )
+		#git rm --cached FileName  (Remove from Staging to Working directory  ) 
+		#git commit -m " message, I fix the JavaScript file"  ( Moving from Staging area to Local Repo )  
+
+		#git branch ( showing all branching available )
+		#git remote -v ( showing all remote servers)
+
+
+		git push remoteServerName BranchName  ( Push your repo from local repo to remote repo ( Github )
+		git pull origin master ( Pull the latest updates from remote repo to your local repo  )
+
+
+	Git Config
+		#git config --global user.email "you@example.com" -> Set an email 
+		#git config --global user.name "Your Name"  -> Set a name
+
+
+		#git branch payments --> create Payments branch  
+		#git checkout payments -> switch to Payments branch
+		#git branch -d payments -> Delete Payments branch
+
+
+	Merge Branch
+		First need to switch to the parents branch ( #git checkout master )
+		Then run the command to merge the branch ( #git merge payments )
+
+	git remote add origin https://github.com/tareqtech02/Uni_Website.git ( link from local to remote )
+	git push -u origin master  ( push from local to remote )
+
+
+	Git Revert Back
+	git log
+	git checkout <log-code> fileName 
+
+
+     your Work : in Dell G
+
+	+    C:\git-repos\uni_payments (master)
+
+18. Push to Remote Repo ( 9 min) 
+	+ git remote add origin https://github.com/waahidsyed786/uni_website.git
+		+ link from local to remote
+ 	+ git push -u origin master
+		+ push from local to remote
+	
+	+ Get token from Github
+		+ Settings > Developer settings/ Personal access tokens > tokens (classic)
+
+
+
+19. Git Updated code to GitHub from Windows
+20. Git updated code to GitHub from Linux 
+21. Git Revert Back Restore old code
+
+
+
+----------------------------------------
+Definitions : 
+----------------------------------------
+PEM - Privacy Enhanced Mail 
+ppk - putty private key 
+vdi - Virtual Disk image 
+iso - no definition , just an virtual disk image 
+
+
+
+-----------------------------------------
+Different commands used 
+-----------------------------------------
+
+Change Host Name : 
+	-- sudo hostnamectl set-hostname jenkins
+   	-- bash 
+ping : 
+	-- ping www.google.com
+
+install software (apche webserver) 
+	-- sudo yum install httpd -y
+
+start / check status of a service ( apache webserver)
+	-- systemctl status httpd
+	-- systemctl enable httpd 
+	-- systemctl start httpd 
+	-- systemctl stop httpd
+	-- systemctl restart httpd 
+	-- systemctl disable httpd 
+
+Mask httpd service i.e. completely disable it so that no other service can activate httpd:
+	-- sudo systemctl mask httpd
+
+Add a user & passwd in Centos / RHEL 
+	-- useradd tareq
+	-- passwd tareq 
+
+login into an account : 
+	- vi /etc/ssh/sshd_config 
+		PasswordAuthentication yes
+
+restart the system/ sshd  
+	systemctl reload sshd 
+
+make a user root password
+	- passwd root 
+
+change user to root 
+	- su - root 
+	- su - ec2-user 
+	- sudo -i ( swith user to root )
+
+information about the host : 
+	- hostnamectl 
+-----------------------------------------------
+Fix-the-IP-Address
+-----------------------------------------------
+nmcli connection up enp0s3
+
+Create a file named 
+vim /etc/sysconfig/network-scripts/ifcfg-enp0s3
+
+
+DEVICE="enp0s3"
+ONBOOT=yes
+NETBOOT=yes
+BOOTPROTO=dhcp
+TYPE=Ethernet
+NAME="enp0s3"
+----------------------------------------------------
+	- uptime -p 
+
+
+Trouble shooting 
+------------------------------------------------------
+Virtualbox on your host claims:   7.0.4
+VBoxService inside the vm claims: 7.0.6
+
+Solution : 
+vagrant plugin update

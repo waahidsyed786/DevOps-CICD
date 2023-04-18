@@ -1,0 +1,211 @@
+
+The Ultimate DevOps Bootcamp - 2023
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+08 - Jenkins Introduction
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-- 01 : applicaiton details  ( 2 min) 
+
+ github : AdminTurnedDevOps/go-webapp-sample
+https://github.com/AdminTurnedDevOps?tab=repositories
+
+https://github.com/ybkuroki/go-webapp-sample
+
+--02 : Working with the Application ( 6 min) 
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+09 - Prerequisites
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+--001 What is CICD : (7 min )
+   CI - Continous Integration ( Gift elements Pack, Wrapped) - Pieces of Code, GitHub Repositories. 
+
+   -- Key pieces of CI , Test your Code ( Unit test, Integration tests) 
+   -- Security Checks ( SonarQube) 
+
+Continuous Delivery / Deployment : 
+
+   -- Package is Delivered to the Client  (C Delivery)
+   -- 
+   -- Cloud or on premises : 
+
+
+CD vs CD :
+--  Authenticate
+--  test against the system . 
+
+002 Why Jenkins ( 3 min)
+
+- Open Source, 1K+ plugins, Free, Paid, Enterprise
+-- Free, CI/CD suite, 
+
+
+003 Jenkins Getting Started ( 4 min) 
+
+--- jenkins blog 
+--- Jenkins Documentation 
+--- Plugin ( connect with other systems )
+	-- e.g., AzureCLI, 
+--- Jenkins Community 
+--- Jenkins Roadmap 
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+10 - Installing Jenkins
++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+001 Installing Jenkins ( 2 min)
+   --- install jenkins, ubuntu 20.04, (Azure, AWS, Cloud, VM)
+   --- 
+--------------------------------------------------------
+
+002 Install Jenkins on a VM ( 7 min ) 
+
+-- Microsoft Azure 
+	-- Virtual Machines > Resource Group > Ubuntu 20.04  > 1vcpu > Allow Selected Ports >  >  > Created 
+
+-- Login > ssh mike@40.121.40.56
+	password : 
+	login Successful. 
+
+-- sudo apt update -y 
+-- sudo apt install openjdk-11-jdk
+add repository key to the system 
+-- wget  -q -O - https://pkg.jenkins.io/debian-stable ... && sudo apt-key add - 
+
+add repository for the server source list 
+-- sudo sh -c 'echo deb https://pkg.jenkins.io/debian 
+    /etc/apt/sources.list.d/jenkins.list'
+
+sudo apt update -y 
+sudo apt install jenkins -y
+
+sudo systemctl start jenkins 
+systemctl status jenkins 
+
+sudo ufw allow 8080
+sudo ufw status
+(inactive) -- fine
+
+ Browser : IP:8080
+
+check AWS or any instance : port / SG : 8080 , 22 
+
+jenkins password : 
+ sudo cat /var/lib/jenkins/secrets/initialAdminPassword 
+-- install suggested plugins
+--Creae First Admin User : 
+-- Instance Configuration ( https://xx.xx.xx.xx:8080)
+---------------------------------------------------------
+003 Install Jenkins on a VM. html
+
+004 Jenkins CLI ( 2 min) 
+
+   --  Jenkins > user > settings >  
+        -- take public key of the  instance
+	-- paste , save 
+	-- ssh -l kohsuke -p 53801  localhost help
+
+-------------------------------------------------------
+005 Using Jenkins CLI ( 5 min) 
+
+   -- Jenkins > Manage Jenkins > Jenkins CLI >
+   -- java -jar jenkins-cli -s http://20.127.124.114:8080/ -webSocket help 
+
+
+  -- wget http://20.127.124.114:8080/jnlpjars/jenkins-cli.jar
+
+   -- Manage Jenkins > Configure > API Token > Generate TOKEN > 
+    -- java -jar jenkins-cli.jar  -s http://20.127.124.114:8080/  -auth mike:TOKEN
+
+   --  java -jar jenkins-cli.jar  -s http://20.127.124.114:8080/  -auth mike:TOKEN -webSocket list-jobs
+
+>Jenkins > GUI > New Item > test2 > pipeline > Pipeline > try sample pipe line >> Save 
+
+Jenking CLI
+
+> java -jar jenkins-cli.jar  -s http://20.127.124.114:8080/  -auth mike:TOKEN -webSocket list-jobs 
+
+> java -jar jenkins-cli.jar  -s http://20.127.124.114:8080/  -auth mike:TOKEN -webSocket build test2
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+11 - Jenkins Plugins and Integrations
++++++++++++++++++++++++++++++++++++++++++++++++++++++
+001 What are plugins (2 min) 
+-------------------------
+user --> (gmail, github, Linkedln, Facebook) > Website
+ connect to other services  - Azure Plugin at programmatic level 
+  jenkins ( AWS plugin, Github Actions Plugin) 
+
+
+-----------------------------------------
+002 Installing a Plugin ( 3 min) 
+-----------------------------------------
+jenkins.io ( search - azure, aws, python, golang, )
+
+-----------------------------------------
+003 Restarting Jenkins For Plugins That Require Restarts (2 min)
+------------------------------------------
+Plugins (Azure ) 
+
+sudo systemctl restart jenkins 
+sudo systemctl status jenkins 
+
+login ( user /password )
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+12 - Systems Administration with Jenkins
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+001 Administering Jenkins ( 2 min)
+------------------------------------------
+Administering Jenkins : 
+	- backup 
+	- restore 
+	- monitor
+	- Scale 
+	- Manage 
+-------------------------------------------
+002 Backup and restoring Jenkins
+-------------------------------------------
+Backup : 
+	- Full , Snapshots, decrementals 
+
+ - Which  files to Backup ?
+	Jenkins_Home folder - configuration files (config.xml)
+			    - Jobs 
+------------------------------------------
+003 Backup Jenkins ( 5 min)
+------------------------------------------
+Jenkins Documentation: 
+	-- Creating a Backup 
+   Plugin for backup not availble through google, 
+        -- sue445/jenkins-backup-script ( https://github.com/sue445/jenkins-backup-script ) 
+
+ -- manage jenkins > manage plugins > available > backup > Thin backup > install with restart 
+
+-- manage jenkins > found ThinBackup >> settings 
+    (path where backups are stored)
+ -- backup now > 
+  -- ssh mike@IP 
+	-- pwd 
+	-- mkdir jenkins_backup 
+	-- cd jenkins_backup (copy path), permissions
+		- chmod 777 jenkins_backup [ SAVE]
+ - backup now > -- 
+
+-------------------------------------------------
+004 Restore Jenkins ( 2 min)
+------------------------------------------------
+Thin backup > Restore > Restore From >
+	-- backup >> select all 
+	-- backup now 
+   > restore 
+	-- Select the backedup file 
+
+
++++++++++++++++++++++++++++++++++++++++++++++++++
+13 - Pipelines
++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+

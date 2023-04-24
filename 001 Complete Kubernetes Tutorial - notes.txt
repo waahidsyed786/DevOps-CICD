@@ -1,0 +1,770 @@
+==============================================================================
+==============================================================================
+4 - Path to Automation with Kubernetes
+==============================================================================
+
+
++ 11 - Section Intro Path to Automation with Kubernetes ( 1 min ) 
+
+  	- take use case
+
++ 12 - Namespaces ( 5  min)
+
+	- Namespace
+		+ application stack 
+	- Clustering , one single cluster, 
+	- to that end point or interace
+	- stack = project  ( project A, project B, Project C) 
+
++ 13 - Pods ( 9 min )
+
+	- App  > docker image (portable Runtime Environment) > container > pod  ( container ) > Pods ( pod (container1) , pod (container 2)
+	-  isolated ( process/pid, namespace)
+			( root filesystem, namespaces)
+			( user namespace)
+	- common	(network, namespace)
+			( hostname /uts, namespace)
+			( volumes)
+ 	- one applicaiton , one pod 
+	- launch a pod ( unit of deployment is POD)
+	- SPECS	
+		- A ( API Version)
+		- K ( kind) - entity 
+		- M ( Meta Data) - labels, 
+		- S ( Specs) - like docker compose, container info. 
+
++ 14 - Replication Controller Replica Sets and Deployments ( 11 min)
+
+	- Availability ( Hight Availability)
+	- Scalability
+	- Fault Tolerance
+
+	- Replication Controller ( selection criteria) 
+		+ Lables and selectors
+	- replicationController	 (old ), ReplicaSet ( NEW)
+		+ application Availability
+		+ update strategy ( of application)
+	- High Availability  | release strategy
+		Replicationcontroller   |  	rolling-update
+		replicaSet			|	updateStrategy  = deployment 
+
+	- deployment ( ReplicaSet, UpdateStrategy and pod spec )
+
++ 15 - Service Discovery and Load Balancing ( 9  min )
+	
+	- Service Discovery  (app1 > app2) 
+		- api ( app )
+	- service ( ui:80) with selectors ( Endpoints ) name and port 
+	- service (ui:80 ) without selectors ( db.rds.aws.com, Endpoints)
+	- clusterIP ( 10.30.45.76) , dns ( ui.project1.svc.cluster.local)
+	- host:30000-32768, NodePort - Layer 4
+	- host :80 , 	- Layer 4
+	- Load Balancer (ELB)   - Layer 4
+	- Ingress controller - nginx ( ui, api, xyz.com ) application level routing 
+
+
++ 16 - Applying kubernetes primitives to your Application Stack  ( 4 min )
+	- 5 applicaitons into a stack 
+		+ create a namespace  ( Cluster )
+		+ Firewall () , network policies
+		+ Deployments ( creates replicaSet, Avilability of pods ), update strategy
+		    ( controller manager )
+		+ Create a service (applications talk to each other), 
+			- service discovery 
+			- Ingress 
++ 17 - Configmaps and Storage Network RBAC etc ( 6 min ) - Additional Concepts
+
+	- ConfigMaps and secrets ( credentials ) - encrypted data
+	- persistent Volumes 
+	- Network and CNI ( container Network Interface )
+	- Network Policies  ( firewall ) 
+	- HELM package manager 
+	- RBAC ( v1.6) Roles, Bindings, Authorization, contexts,
+	- Horizontal Pod , AutoScaler
+   - Heapster
+
+
++ 18 - Daemonsets Statefulsets Crons and Jobs	( 6 min ) - additional controllers
+	- HA, FT, 
+	- Daemon Set ( Monitoring / Logging Agents ) similar to deployment Kind (Daemon set)
+	- Stateful Set (   constant identifier,  , ser1, ser2, )
+	- app.svc.ns.cluster
+	- CRON (cron jobs, 
+
++ 19 - Kubernetes Architecture Run Down ( 7 min )
+	- kubectl ( CLI ) , cluster manager 
+	- Master ( Scheduler, API Server ( endpoint) , Controllers Manager, etcd)
+	- API Server > kubectl , openshift
+	- controller managers ( deployments, DaemonSets, statefulSet, Crons, jobs, replicaSet)
+	- Scheduler ( where to submit , resource aware )
+	- etcd ( core and essential, cluster state, need to take backup ) 
+	- skydns , etcd 
+
+	- node side ( Kubelet ( stand alone ) , kube-proxy ( network proxy.iptables, port mapping, routing ) , Container Runtime Engine (Docer, RunC, Rocket ), 
+	- 
+
++ 20 - Building production grade Hight Available Kubernetes Cluster  ( 7 min )
+
+	- multiple masters (multiple etcd), Cluster , Multiple Managers, One leader, others are followers, RAFT 
+	- send traffic to masters by load balancers,  distribute the load, 
+
+	- HA Design ( kubectl, ui, api, clients  )
+		 ||
+		 ----> lb  |---> etcd, etcd, etcd ( managers ) 
+		  ----> nodes 
+
+	-- additional entities  
+			- ( storge - block, volumes , cluster FS ), 
+			- ( log mgmt ) Splunk like tool, ELK tool
+			- ( Monitoring ) promatheus, graphana, 
++ 21 :
+
+	
+file:///C:/Users/hameeda/Desktop/All%20videos/001%20Complete%20Kubernetes%20Tutorial/4%20-%20Path%20to%20Automation%20with%20Kubernetes/21%20-%20Exercise.html
+
+
+=======================================================================
+=======================================================================
+5 - Just Enough Docker for a Kubernetes Practitioner 
+=======================================================================
+
++ 22 - Who is this section for  ( .html )
++ 23 - Setting up and validating docker environment  ( 6 min ) 
+	- docs.docker.com
+	- docker CE, docker EE, Centos, Ubuntu or other OS
+	- labs.play-with-docker.com
+
+	- docker version  ( output : Client Version, Server Version)
+--------------------------------------------------------------------	
+	- Docker installation on Centos9
+-----------------------------------------------------------------------
+		- https://docs.docker.com/engine/install/centos/
+		- sudo yum remove docker \
+                  docker-client \
+                  docker-client-latest \
+                  docker-common \
+                  docker-latest \
+                  docker-latest-logrotate \
+                  docker-logrotate \
+                  docker-engine
+
+		- Set up the repository
+			Install the yum-utils package (which provides the yum-config-manager utility) and set up the repository.
+
+
+ 			sudo yum install -y yum-utils
+ 			sudo yum-config-manager \
+ 			   --add-repo \
+  			  https://download.docker.com/linux/centos/docker-ce.repo
+
+		- Install Docker Engine, containerd, and Docker Compose:
+			sudo yum install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+		- Start Docker.
+			 sudo systemctl start| stop | restart | status | docker
+			
+		- Verify that Docker Engine installation is successful by running the hello-world image.
+			sudo docker run hello-world
+
+		-sudo systemctl enable docker
+Created symlink /etc/systemd/system/multi-user.target.wants/docker.service → /usr/lib/systemd/system/docker.service.
+
+	==== docker version 
+		- docker run hello-world
+	- hub.docker.com	
+		- docker system info  ( information about docker.daemon )
+		- docker -v 
+		- docker ( can help from docker )
+
+-------------------------------------------------
+UBUNTU 2204
+------------------------------------------------
+ sudo apt install net-tools
+Set up the repository
+Update the apt package index and install packages to allow apt to use a repository over HTTPS:
+
+ 		sudo apt-get update
+ 		sudo apt-get install \
+		   	 ca-certificates \
+   			 curl \
+   			 gnupg
+
+Add Docker’s official GPG key:
+
+		 sudo install -m 0755 -d /etc/apt/keyrings
+ 		curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+ 		sudo chmod a+r /etc/apt/keyrings/docker.gpg
+
+Use the following command to set up the repository:
+
+
+ echo \
+ 		 "deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  "$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+  
+	sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+Install Docker Engine
+Update the apt package index:
+	-  sudo apt-get update
+
+Install Docker Engine, containerd, and Docker Compose. ( Latest Version )
+
+sudo apt-get install docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
+
+sudo systemctl enable docker
+Synchronizing state of docker.service with SysV service script with /lib/systemd/systemd-sysv-install.
+Executing: /lib/systemd/systemd-sysv-install enable docker
+
+
+
+Verify that the Docker Engine installation is successful by running the hello-world image:
+	-  sudo docker run hello-world
+-------------------------------------------------
+UBUNTU 2204
+------------------------------------------------
+
++ 24 - Running your first container ( 6 min ) - ephemeral ( run  & exit )
+
+	- alphine ( tiny linux, based on busy box linux )
+		- around 2 MB 
+	- docker image format 
+		- registry.docker.io   /user     /ubuntu :16.04
+		-   registry         namespace repository tag 
+		- repository in mandate , default is tag
+	- docker container run alpine:3.6 uptime 
+	- docker system events  ( run in an another window)
+	- docker container run alpine ps 
+	- docker ps 
+	- docker ps -l
+	- docker container run alpine uname -a 
+	- docker container run alpine date 
+	- docker ps -n 2 ( last 2 executed containers )
+	- docker ps -a
+
++ 25 - Making containers persist with idt options ( 5 min ) - persistent
+
+	-  docker run -it alpine sh / bash / zsh
+	-  docker ps 
+	-  / container : cat /ect/issue
+	-  /  # : ps aux 
+	- ( other window ) # ps -ef --forest 
+	- /# : ifconfig
+	- /# : 
+	- ( other window ) watch docker ps 
+	- docker container -itd alpine sh     ( -d detaches from the docker )
+	
+	- docker container run -it schoolofdevops/loop program 
+		- press ctrl + p , then ctrl + q - to exit from the process
+
+	- docker container run -itd schoolofdevops/loop program ( runs detached)
+	- docker container run schoolofdevops/loop program
+		- press Ctrl +c to kill the container 
+
+	- list last two containers 
+		- docker ps -n 2 
+ 
+
++ 26 - Essential Container Operations list logs exec cp inspect stop rm ( 6 min )
+	- List of containers :
+		- docker ps 
+	- rename a container :
+		- docker rename  oldname new_name 
+	- checking the logs 
+		- docker logs a78 ( container ID)
+	- run commands inside the container
+		- docer exec containerID ps 
+	- persistent container ( ssh connection to container)
+		- docer exec -it containerID sh  ( you are inside the container)
+	- detailed information about a container
+		- docker inspect containerID
+	- running containers list 
+		- docker ps 
+	- copy a file into a container
+		- docker container cp testfile containerID:/opt
+	- difference between the running container and initial container
+		- docker diff containerID
+	- stop a running container 
+		- docker stop containerID1 containerIdn
+	- remove containers
+		- docker rm containerID1 containerid n
+		- can not remove a running container , use -f to force to remove
+		- docker rm -f contianerID1 containerID n
+
++ 27 - Lab Operating Containers ( .html)
+
+	- https://kubernetes-tutorial.schoolofdevops.com/install_kubernetes_with_kubeadm/
+
+
++ 28 - Publishing containers using port mapping ( 8 min )
+
+	- launch a image with web server ( nginx )
+		- docker container run -idt -P nginx 
+		- -P ( port automatically assigned and automatically increments the port numbers of the new containers of the same image)
+
+	- docker ps 
+	- ( host system ) ifconfig 
+	- web browser ( IP of Host : Port of the host ) mapped to the port of Container 
+	- define a specific port for the container use ( -p )
+		- docker container run -itd -p 8888:80 nginx 
+
+	- hub.docker.com 
+		- ghost ( wordpress application)
+		- docker container run -itd --name ghost -p 3001:2368 ghost:alpine
+	- know about last run contaner 
+		- docker ps -l
+	- last two run containers
+		- docker ps -n 2 
+	- logs of the container
+		- docker logs containerID
+	
+	(from hub.docker.com)
+		- docker run -d --name some-ghost -e NODE_ENV=development ghost
+		- docker run -d --name some-ghost -e NODE_ENV=development -e url=http://localhost:3001 -p 3001:2368 ghost  ( working well)
+
+	- stop a container 
+		- docker stop containerID
+	- remove a container
+		- docker rm -f containerID
+	- remove an image
+		- docker rmi -f imageName 
+
+	- to start a container 
+		- docker start containerID / Name
+		- don't always use run , it starts a new container 
+	
++ 29 - Using docker instead of VMs to create development environments ( 5 min ) 44	+ docker images 
+	+ docker history nginx 
+	+ docker pull ubuntu
+	+ docker pull centos 
+	
+	+ docker image ls
+	+ docker container run -itd --name dev-ubuntu --net host ubuntu bash
+	+ docker container run -itd --name dev-centos --net host centos bash
+
+	+ docker exec -it dev-ubuntu 
+		- inside the container
+		- can install any packages
+		- # touch /opt/myfile
+	+ docker stop dev-ubuntu
+	+ which vim
+	+ ps aux
+	+ docker exec -it dev-centos bash
+	+ 	# / yum install
+		# which vim
+
+	+ docker stop dev-centos 
+	+ docker rm dev-centos  dev-ubuntu
+
++ 30 - Portainer Web console to managing Docker Environemnts ( 6 min )
+	+ hub.docker.com
+	+ web based application : portainer.io/install.html
+
+	+ https://docs.portainer.io/start/install-ce/server/docker/linux
+
+  + Deployment
+	First, create the volume that Portainer Server will use to store its database:
+		+ docker volume create portainer_data
+
+	download and install the Portainer Server container:
+		+ docker run -d -p 8000:8000 -p 9443:9443 --name portainer --restart=always -v /var/run/docker.sock:/var/run/docker.sock -v portainer_data:/data portainer/portainer-ce:latest
+
+
+Logging In
+Now that the installation is complete, you can log into your Portainer Server instance by opening a web browser and going to:
+https://localhost:9443
+
+
++ 31 - Launching Application Stack with Docker Compose ( 5 min )
+
+	+ docker run --help 
+	+ multi container or multi stack application like 
+		- prometheus,  node-exporter, alertmanager, cadvisor, grafana
+
+	+ run command , remember the run and 
+
+	+ use docker-compose 
+		- https://github.com/vegasbrianc/prometheus/blob/master/docker-compose.yml
+
+	+ install git centos9
+		
+		-https://idroot.us/install-git-centos-9-stream/
+
+	+ Step 1. First, let’s start by ensuring your system is up-to-date.
+		
+	sudo dnf update
+		
+	+ Step 2. Installing the Git on CentOS 9 Stream.
+
+		Install Git from App stream.
+		By default, Git is available on the CentOS 9 Stream base repository. Now we run the following command below to install Git to your system:
+
+		sudo dnf install git
+
+	+ Verify Git installation:
+
+		git --version
+
+		==== SUCCESS  installing git ============
+
+	+ download the repository : https://github.com/waahidsyed786/prometheus.git
+		 - sudo -i
+		- git clone https://github.com/waahidsyed786/prometheus.git
+
+	+ run docker compose with the docker-compose.yml 
+		 docker-compose up -d  ( NOT THIS Command )
+		- docker compose up -d  ( SUCCESS )
+	
++ docker compose ps 
+	
+	+ alertmanager 	0.0.0.0:9093    	192.168.1.9:9093
+	+ cadvisor     	0.0.0.0:8080	192.168.1.9:8080
+	+ grafana		0.0.0.0:3000	192.168.1.9:3000
+	+ node-exporter	0.0.0.0:9100	192.168.1.9:9100
+	+ prometheus	0.0.0.0:9090	192.168.1.9:9090
+
+	+ stop the docker compose 
+		- docker compose stop 
+
+	+ to remove the docker compose 
+		- docker compose down
+
++ 32 - Building an image manually with docker commit ( 6 min) 
+
+	+ https://github.com/schoolofdevops
+	+ https://github.com/orgs/schoolofdevops/repositories?type=all
+
+	+ https://github.com/schoolofdevops/facebooc.git
+	+ clone the application
+		+ git clone  https://github.com/schoolofdevops/facebooc.git
+
+	+ run the container 
+		+ docker container run -idt --name fb =p 16000:16000 ubuntu bash 
+	+ docker ps -l
+	+ docker exec -it fb bash 
+		- ps au
+		- apt-get update
+		- apt-get install -yq build-essential make libsqlite3-dev sqlite3
+		- which gcc
+		- which make 
+		- ls 
+	+ exit
+	+ copy the file from outside into the container 
+		docker cp facebooc fb:/opt
+	+ docker run -it fb bash 
+	+ cd /opt/facebooc
+	+ ls 
+	+ which make 
+	+ make all 
+
+	+ bin directory has the file
+		- ignore the warnings
+	+ ./bin/facebooc
+		- running on port 16000
+
+	+ http://192.168.1.9:16000/ ( web Browser )
+		- ctrl c to exit
+	+ commit the container that created
+	+ exit from the container 
+		- exit
+	+ docker ps -l
+	+ docker diff fb 
+
+	+ docker container commit fb initcron/facebooc:v1
+		- initcron ( use your own dockerhub id) 	
+		- my docker id is waahidsyed
+	+ docker container commit fb waahidsyed/facebooc  [ :v1]
+	+ docker image ls
+	+ docker image history imageID 
+
+	+ push the image to the registry 
+		+ login 
+			+ docker login ( waahidsyed / passwd)
+				(SUCCESS)
+		+ docker image push waahidsyed/facebooc    [:v1]
+	+ check in the hub.docker.com > repositories
+
++ 33 - Lab Building and Publishing a Docker Image (.html)
+
+ 
++ 34 - Automatiing image builds with a Dockerfile ( 5 min )
+	+ previous approach is the manual approach 
+	+ need to automate that with Dockerfile 
+
+	+ Dockerfile has the instructions u exectued manually in the eariler 
+	+ git checkout docker 
+	+ cat Dockerfile
+		FROM  ubuntu
+		WORKDIR /opt/facebooc
+		RUN  apt-get update &&  \
+     		apt-get install -yq build-essential make git libsqlite3-dev sqlite3 
+	
+		COPY . /opt/facebooc
+		RUN  make all 
+		EXPOSE 16000
+		CMD "bin/facebooc"
+	+ docker image build -t waahidsyed/facebooc:v2 . ( current directory )
+	+ docker image ls 
+	+ docker image history waahidsyed/facebooc:v2
+	+ docker image history waahidsyed/facebooc:latest
+
+	+ docker container run -idt -P waahidsyed/facebooc:v2
+	
+	+ publish the image 
+		- docker image push waahidsyed/facebooc:v2
+
++ 35 - Dockerfile Primer
+
+	+ What is Dockerfile
+		- text configuration for docker image
+		- can be used to create docker images programmatically
+		- can be shared 
+
+	+ instruction types 
+		- ENV 			- COPY
+		- FROM 			- EXPOSE
+		- WORKDIR			- VOLUME
+		- ADD				- USER
+	
+	+ FROM : 
+		- specified base image to use   FROM ubuntu:lates
+		- can optionally take image tag. 
+				- uses latest if not specified
+		- must be first instruction after comment 
+
+	+ MAINTAINER : 
+		- Author/Maintainer Information
+		- Accespts name followed by email address
+		- eg., MAINTAINER Gourav <gs@initcron.org>
+
+	+ RUN 	
+		- Accepts command or sequence of commands to run 
+			- RUN <commands>
+		- wil create a new layer and commit 
+
+	+ layering is a key concept which allows docekr to push/pull incremental updates to the image. 
+
+	+ docker image history initcron/facebooc:v2
+		+ one instruction : one layer  except for FROM 
+
+	+ RUN commands create caches for each layer which can then be reused for any similar instructions used later. 
+
+	+ CMD 
+		- only one CMD instruction per Dockerfile
+		- used to provide default program to be executed after launching container 
+		
+		- CMD ["executable","param1","param2"]
+		- CMD ["param1","param2"]
+		- CMD command param1 param2
+		- eg., CMD "/bin/facebooc"
+
+	+ EXPOSE 
+		- ports to map 
+		- used to link containers together 
+		- Are read when using docker run -P 
+
+		- EXPOSE <port> {<port>...}
+		- EXPOSE 16000
+	+ ENV
+		- sets environment variables
+		- used by subsequent run instructions
+		- ENV  <key> <value>
+
+	+ COPY
+		- copies files to container 
+		- does not accept remote path 
+		- COPY <src> <dest>
+		- COPY . /opt/facebooc
+	+ ENTRYPOINT 
+		- Decides what to run after container is created 
+		
+		- ENTRYPOINT ["executable", "param1", "param2"]
+		- ENTRYPOINT  command param1 param2
+
+	+ VOLUME	
+		- Mount local directory to container 
+		- VOLUME ["/data"]
+	
+	+ USER 
+		- User to execute commands as 
+		- Applies to RUN, CMD, ENTRYPOINT 
+
+	+ WORKDIR
+		- Working/build directory path 
+		- can be used multiple times
+		- WORKDIR <path>
+
+		- docker exec -it CID bash 
+
+	
+======================================================================
+======================================================================
+6 - Setting up a Kubernetes environment
+======================================================================
+
+36 - Section Intro Setting up Environment  ( 3 min ) 
+	+ 
+
+37 - LAB Option 1 Setting up single node kubernetes with Minikube (.html)
+	+ 
+
+38 - LAB Option 2 Provisioning 3 nodes for Kubernetes with Vagrant and VirtualBox (.html)
+
+39 - Provisioning and configuring Digital Ocean Nodes 
+
+
+
+--------------------------------------------------------UBUNTU 16.04---------------------------------------------------------
+#!/bin/bash 
+
+export DEBIAN_FRONTEND=noninteractive
+
+apt-get update
+apt-get install -y git wget net-tools
+
+# Prereqs
+
+modprobe overlay
+modprobe br_netfilter
+
+
+swapoff -a
+sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+
+tee /etc/modules-load.d/k8s.conf <<EOF
+overlay
+br_netfilter
+EOF
+
+cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+net.bridge.bridge-nf-call-iptables  = 1
+net.bridge.bridge-nf-call-ip6tables = 1
+net.ipv4.ip_forward                 = 1
+EOF
+
+sysctl --system
+
+
+# Install Containerd as Runtime
+apt-get install -yq \
+    apt-transport-https \
+    ca-certificates \
+    curl \
+    gnupg-agent \
+    gnupg \
+    software-properties-common
+    
+mkdir -p /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+   
+echo \
+  "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+  $(lsb_release -cs) stable" |  tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+apt-get update
+
+apt-get install -yq containerd.io
+
+containerd config default |  tee /etc/containerd/config.toml >/dev/null 2>&1
+sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+
+systemctl restart containerd
+systemctl enable containerd
+
+# Install kubeadm, kubectl and kubelet
+
+curl -fsSLo /etc/apt/keyrings/kubernetes-archive-keyring.gpg https://packages.cloud.google.com/apt/doc/apt-key.gpg
+echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" |  tee /etc/apt/sources.list.d/kubernetes.list
+
+
+apt-get update -y
+
+apt-get install -y  kubelet kubeadm kubectl kubernetes-cni nfs-common
+
+# Additional Configuration
+
+#sysctl net.bridge.bridge-nf-call-iptables=1
+
+
+
+
+rm -rf /var/lib/kubelet/*
+
+apt-get install nfs-common -y
+-------------------------------------------------------------Test code -------------------------------------------------
+
+
+	+ digital ocean ( cloud provider)
+	
+	+ git-bash
+	+ Three VMs
+	+ each VM 
+		- sudo -i
+		- docker version 
+		- which docker 
+
+	+ kube -01
+		- kubectl version
+		- kubelet 
+		- kubelet -help
+		- kubelet --version 
+
+		- which docker 
+		- which kubelet 
+
++ 40 - Initialise Cluster with Kubeadm ( 7 min )
+
+	kube-01
+		+ hostname -i
+	
+
+To initialize master, run this on kube-01
+
+kubeadm init --apiserver-advertise-address 192.168.56.101 --pod-network-cidr=192.168.0.0/16
+
+
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Initialization of the Nodes (Previously Minions)
+After master being initialized, it should display the command which could be used on all worker/nodes to join the k8s cluster.
+
+
+configure kubeclt : kube-01
+e.g.
+
+kubeadm join --token c04797.8db60f6b2c0dd078 192.168.12.10:6443 --discovery-token-ca-cert-hash sha256:88ebb5d5f7fdfcbbc3cde98690b1dea9d0f96de4a7e6bf69198172debca74cd0
+Copy and paste it on all node.
+
+
+( on my own Vagrant VMs)
+
+
+kubeadm join 192.168.56.101:6443 --token nbjqst.pui8tlu1bkfec1oy \
+        --discovery-token-ca-cert-hash sha256:3e2b065e2da42ee5ada35cace663420793aff71204c9ee664db5af67eb7e5cad
+
+
+
+ERROR  : alread 10250 in use 
+
+netstat -ltnp | grep -w ":10250"
+journalctl -xeu kubelet
+
+kubeadm reset 
+
+
+
+Troubleshooting Tips
+If you lose the join token, you could retrieve it using
+
+kubeadm token list
+
+
+

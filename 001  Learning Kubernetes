@@ -1,0 +1,369 @@
+Linux Commands : 
+
+# lsb_release -a  ( show the OS information ). ubuntu 2204
+# apt-get update 
+# sudo apt-get install ca-certificates curl gnupg lsb-release
+
+# add official GPG Key
+    curl 
+    
+    setup the repository 
+--install docker-ce docker-ce-cli containerd.iCo docker-compose-plugin
+# docker 
+
+
++ install docker on Mac 
+ 
++ Install minikube on Mac/ubunut/windows
+  minikube
+  minikube update-check
+  minikube start
+  minikube stop
+  minikube delete
+  
+  
+ + docker 
+ + create a cluster
+   minikube start 
+ + kubectl ( k8s control) interact with k8s cluster 
+ + kubectl cluster-info 
+ + kubectl get nodes 
+ + kuebctl get ns / namespaces
+ + kubectl get pods -A ( pods in all name spaces )
+ + kubectl get services -A
+ -===========================
+ Applicaiton Deployment 
+ ------------------------------
+ 1. Reading and Writing YAML (yaml, yml extension )
+   +  IaaC
+   + GitOps
+   YAML manifests
+   
+YAML : Data Serialization language ( other languages JSON, XML ) 
+ makes portable 
+YAML Ain't Markup Language
+
+--- ( beginning of the document )
+many documents can be written in a single file 
+
+# is a comment  (yaml or yml)
+stores key value pairs : 
+name: Kin Schelsinger 
+
+courses:        [ LIST] 
+  - learnining kubernets 
+  - k8s
+jobs:
+   L:2
+   l:3
+   titles:
+     - D
+     - E
+ yaml checker.com 
+ 
+ 
+ Create a namespace : 
+   - kubectl get namespaces
+ namespace.yaml
+ ---
+ apiVersion:v1
+ kind:Namespace
+ metadata:
+    name: development 
+  kubectl apply -f namespace.yaml
+  kubectl get namespaces
+----
+  apiVersion:v1
+  kind:Namespace
+  metadata:
+      name:production
+ kubectl apply -f namespace.yaml 
+ 
+ kubectl get namespaces
+ kubectl delete -f namespace.yaml
+    - delete bothe name spaces 
+ ===========================
+ Deploy an application : HA 
+  
+ apiVersion : apps/v1
+ kind: Deployment
+ meatadata: 
+    name: pod-info-deployment
+    namespace: development 
+    labels: 
+        app: pod-info
+ spec:
+     replicas: 3
+     selector: 
+        matchLabels:
+           app: pod-info
+     template:
+        metadata:
+          labels: 
+             app: pod-info
+        spec:
+          containers: 
+          - name: pod-info-container
+            image: kimschles/pod-info-app:latest
+            ports : 
+             - containerPort: 3000
+             env: 
+             -name : POD_NAME
+               valueFrom:
+                  fieldRef: 
+                     fieldPath: metadata.name
+             -name: POD_NAMESPACE
+               valueFrom:
+                    filedRef:
+                       filedPath: matadata.namespace
+             -name: POD_IP
+                valueFrom: 
+                     fieldRef: 
+                        fieldPath: status.podIP
+ 
+ kubectl get ns 
+ kubectl apply -f namespace.yaml
+ kubectl apply -f deployment.yaml 
+ 
+ kubectl get deployments -n development 
+ kubectl get pod  -n development 
+ 
+ kubectl delete pod-info-deploymentxxxxxxxx
+ kubectl get pods -n development 
+ 
+ =======================================================
+ # check the health of a pod by looking at the event logs
+ 
+ kubectl get pods -n development 
+ kubectl describe pod pod-indo-xxxxxxxxxx -n development 
+ 
+ ======================================================
+ # check that your application is working with BusyBox 
+ 
+busybox.yaml
+ 
+ kubectl apply -f busybox.yaml
+ kubectl get pods
+ (another tab) kubectl get pods -n development -o wide 
+ kubectl exec -it busybox-xxxxxx. -- /bin/sh 
+ inside busybox container 
+/# wget 172.17.0.5  ( connection refused)
+
+
+(another tab )
+/# wget 172.17.0.5:3000
+/# cat index.html 
+/# exit
+------------------
+6. view your application logs 
+
+other way to check applicaiton working
+
+kubectl get pods -n development 
+kubectl logs pod-inof xxxxxxx -n development 
+-----------------------------
+challenge : 
+create own deployment : 
+quote.yaml
+-----------  vscode with code
+----
+apiVersion : apps/v1
+ kind: Deployment
+ meatadata: 
+    name: quote-service
+    namespace: development 
+    labels: 
+        app: quote-service
+ spec:
+     replicas: 2
+     selector: 
+        matchLabels:
+           app: quote-service
+     template:
+        metadata:
+          labels: 
+             app: quote-service
+        spec:
+          containers: 
+          - name: quote-container
+            image: datawire/quote:0.5.0
+            ports : 
+             - containerPort: 8080
+       
+kuebctl apply -f quote.yaml
+kubectl get pods -n development
+kubectl get pods
+  -- busybox running 
+kubectl exec -it busybox-xxxxxx -- /bin/sh
+/# whoami
+
+kubectl get pods -n development -o wide 
+get IP from this 
+/# wget PodID:8080
+/# ls 
+/# rm index.html 
+/# wget PodID:8080
+/#  cat index.html
+
+====================================
+4. Complex Application Deployment
+------------------------------------
+1. Expose your applicaiton to the internet with a Load Balancer
+
+with kubernets service : load balancer service , public ip address, static part 
+
+service.yaml
+---
+apiVersion:v1
+kind: Service
+metadata:
+  name: demo-service 
+  namespace : development 
+spec: 
+  selector: 
+    app: pod-info
+  ports: 
+    - port:80
+      targetPort: 3000
+  type:LoadBalancer
+  
+one of the type (LoadBalancer, ClusterIP, NodeType) services
+
+minikube tunnel  (another tab)
+
+kubectl apply -f service.yaml
+kubectl get services -n development
+
+(another tab)  localhost:
+
+2. Add resource requests and limits to your pod 
+------------------- add to deployment.yaml 
+  resources:
+     requests: 
+        memory: "64Mi"
+        cpu:"250m"
+     limits:
+         memory:"128Mi"
+         cpu:"500m"
+   
+   
+ kubectl apply -f deployment.yaml
+ kubectl get pods -n development 
+ 
+ 
+ 3 delete your kubernetes objects and tear down your cluster 
+minikube stop 
+kubectl delete -f busybox.yaml
+kubectl delete -f deployment.yaml
+kubectl delete -f quote.yaml
+kubectl delete -f service.yaml
+kubectl delete -f namespace.yaml
+
+minikube delete
+
+=========================
+6 kubernetes architecture
+--------------------------
+1. kubernetes control plane
+   
+cluster is - instance of kubernetes
+  - control plane, workder node 
+      kube api exposes api,  
+  - pod, deployments, adn the horizontal pod, autoscaler have API endpoints
+  - kubernetes API has a REST interface
+  - kubectl and kubeadm are CLI tools to communicate with the kubernetes API 
+   via HTTP requests
+   
+ kubectl api-resources
+   - container application 
+ kubectl get pods -n kube-system
+ 
+
+etcd: open source key value store , all data about the cluster 
+    - run as pod 
+ kubectl logs etcd-minikube -n kube-system | jq
+ 
+ kube-scheduler
+ kube- controller manager / plane
+ 
+2 kubernet worker nodes-
+-------------------------
+1. kubelet : agent that runs on every worker node
+             makes sure that containers in a pod are running and healthy
+             communicates direclty with the api-server in the control plance.
+2. container Runtime: 
+            A kubelet assigned to new pod starts a container using CRI 
+            ( Container Runtime Interface)
+            CRI enables the kubelet to create containers with the engines
+              - containerd, CRI-O, Kata Containers, AWS Firecracker
+            
+            in v1.24, dockershim was removed
+            Kube-proxy: 
+            
+ --------------
+ 3. how the control plane and nodes work together
+ -------
+ 
+ 
+              makes sure pods and services can communicate 
+              each kube-proxy communicates directly with the Kube-apiserver
+              
+=================
+7 Advanced Topics
+====================
+1. ways to manage kubernetes pods
+Deployment 
+  - replicas 
+  - no downtime upgrades
+DaemonSet
+   - one pod per node 
+   - background processes 
+Job: 
+   - runs until completion 
+   - deletes pod
+
+2. Running stateful workloads
+----------------------
+ data storage in kubernetes
+    a db independent of your cluster : 
+     
+ kubernetes persistent volumes 
+    - stateful set 
+ 
+3. kubernetes security 
+    any internet server is susceptible to attack 
+    threats are always changing 
+    there are best practices you can apply right away 
+ 
+ steal Data:
+ crpytocurrency mining : 
+ DDOS attack :
+ 
+  securityContext: 
+       allowPrivilegeEscalation:false
+       runAsNonRoot: true
+       capabilities: 
+          drop: 
+             - ALL 
+       readOnlyRootFilesystem: true 
+ 
+snyk CLI - security tool 
+  snyk iac test deployment.yaml 
+
+CVE - vulnerabilities
+
+kubernetes hardening guide 
+ 
+              
+              
+ - COMPLETED 
+              
+            
+            
+ 
+   
+
+
+
+
+ 

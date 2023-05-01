@@ -1,0 +1,357 @@
+
+Lesson 01/22 : ( 2:43 min )
+
++ Why Kubernetes ?
++ Syllabus ?
++ Docker/Container Overview ?
++ About Dockerfile ?
++ Kubernetes Architecture ?
+
+Why Kubernetes?
++ kubernetes.io 
++ Physical server > Virtualization > Halved the usage & cost of Physical Server  >> next level of virtualization is containers 
++ Containers > 
+	+ improves development ( immutable )
+	+ Efficient usage of resources. ( uses less resources )
+	+ Speed in go to market. ( fast deployment, release into market faster )
+	+ integrates very well with cloud. EKS AKS GKE + onpremise
+	+ Updating the application is not a complex job.
+		- Blue Green Deployments, canary deployment, Rolling updates.  ( without any downtime )
+
++ kubernetes is complex, so practice ... CKA, CKAD
++ Practice, Practice, Practice
++ CKA and CKAD - he did december  ( 17 QA, 19 QA)
+
++ If not learned : 
+	+ Can't apply for jobs , 
+	+ not shorlisted 
+	+ 20 Lakhs (CKA)
+
++Syllabus ?
+	+ introduction to Docker and Kubernetes
+	+ Deploying and Managing kubernetes using kops
+		+ KOPS ( Kubernetes Operations )
+		+ AWS , KOPS , Production level cluster deployment
+	+ Creating and integrating Kubernetes Services
+	+ Advamced Scheduling
+	+ Persistent Storage
+	+ ConfigMaps & Secrets
+	+ Securing K8S Cluster 
+	+ Troubleshooting 
+	+ jobs & cronjobs
+	+ Pod Level Security policis
+	+ Monitoring & logging & Cluster Maintenance
+		- Prometheus  ( Monitoring )
+		- Graphana ( Visulization tool )
+	+ AKS, 
+	+ EKS
+	+ Additional K8s Components
+		- Plugins, GitOps
+		- Azure Devops, 
+ 	+ Kibana ( to visualize Logs, visualization tool, Kibana Querry Language )
+	+ EFK (  )
+	+ Helm ( Scripting Language)
+
+Bill for AWS 
+ 	+ not more than 500/- , more practice 1K
+	+ t2.medium ( 3 )
+VMWare & Linux?
+	+  Linux  & Cloud 
+	+ don't bypass , 
+	+ Good Knowledge on Cloud 
+
+Managed Kubernetes ( EKS, AKS )
+	+ need basics from the Beginning
+
+Python Boto ? No
+Terraform  ? No
+GitOps ? Google (argoCD, Gitops)
+Automation ? 
+Splunk & NewRelic  can be integrated with K*S 
+
+Have Cloud Knowledge  ( Devops + Kubernetes ) Docker 
+Testing ? ( containers, Clusters )
+
+==========================================================
+     3. Container Overview ?
+----------------------------------------------------------
+How to start container ?
+  - CRE ( Container Runtime environments )
+  - Docker 
+  - Install Docker, Network changes needed 
+
+Containers Vs VMs
+  - containerd
+eg., CAR (K8S), petrol( HP, IndianOil) _Docker most preferable
+
+VM> Infrastructure >Hypervisor > Guest OS (VM)
+   ----------------------------------------
+    Cloud ( EC2 Server) 
+
+To install Jenkins
+   	- Create VM  ( Host OS)
+	- install Java (JDK)
+	- install Jenkins ( application )
+
+Guest OS means VM
+
+Containers: 
+Infrastructure > Hypervisor  ( VMWare, MS HyperV, Citrix Zen Server (aws), > GuestOS > Container Engine (Docker) > Containers ( Linux Kernel + App )
+ 	- Bins/Lib + App1 
+	- Bins/Lib + App2 
+   - shares resources of Underlying Guest OS resources 
+   
+Node with Containers 
+   > Host1 
+   > Host2 
+   > Host3  ( 
+   > Host4  
+ - ( Kubernetes , Docker swarm , GKE, AKS, EKS, AWS ECS ) Management Layer to manage containers - container orchestration Layer 
+ 
+- Windows OS Container management is different than linux 
+
+- Ubuntu 18.04 ( all nodes of K8S) 
+---------------------------
+Dockerfile
+---------------------------
+  >  creat our own container images to run a container 
+  > Base Image in AWS
+  > need to create own docker images. need to understand Dockerfile 
+ 
+  >  AWS Demo ( ubuntu 18.04 ), t2.micro > VPC, Subnet, Tags (nam e : DockerHost), SG, KP, 
+
+LAB:
+
+>Install an EC2 Instance 
+> login into EC2Instance - Putty
+> sudo su -
+> ifconfig  (interface config)
+   - eth0
+> docker 
+	- don't install the suggested 
+
+> docs.docker.com
+  - to install latest version of docker 
+     > docker for linux 
+   - search for get.docker.com ( SUCCESS) 
+
+> curl https://get.docker.com  - script deployed
+> curl https://get.docoer.com | bash  - INSTALL LINE BY LINE 
+
+> Community Edition 
+   - issues at docker level are minimal, 
+   - Enterprise edition not usually used
+
+> Shell Script, Tf, Ansible, Puppet, Jenkins, Azure Devops, Kubernetes
+
+> docker version 
+  Client, Engine 
+
+> Run a website 
+
+ > docker run --rm -itd --name testconn1 -p 8000:80 sreeharshav/rollingupdate:v5
+
+ >docker ps 
+ 
+> Web Browser : IP:8000
+  - Developers just develops code 
+
+>github . aws-samples/eb-tomcat-snakes
+	- java based web application 
+  - Devops 
+	- needs to build 
+	- dockerfile create an image
+	- keep it in docker registry
+	- create a container from that 
+
+> docker stop testconn1
+> docker run --rm -itd  --name testconn1 -p 800:80 nginx:latest 
+    - creates a container 
+> Web Browser : iP:8000
+-----------------------
+
+> need customized image 
+  
+github maverick202  ( instrcutors repo)
+
+
+> git clone https://github.com/maverick202/dockertest1.git
+> cd dockertest1
+> cat Dockerfile 
+   - FROM  nginx:latest     ( base image - from public repository )
+   - MAINTAINER  maverick202@gmail.com
+   - RUN apt install -y curl
+   
+
+>docker build -t sreeharshav/k8snginx:v1 .  ( Current directory)
+> docker images 
+>docker run -itd --rm --name testconn2 -p 9000:80 sreeharshav/k8snginx
+> docker ps 
+
+Web Brower : IP:9000
+
+> docker images are immutable 
+
+> nano index.html
+  	- <h1> welcome to Kubernetes  Training  </h1>
+> docker build -t sreeharshav/k8snginx:v2 . ( current directory )
+
+> docker run -itd --rm --name testcont3 -p 9100:80 sreeharshav/k8snginx:v2
+> docker ps 
+
+> Web browser : IP:9100:80
+
+> Same image from dev env, test env, prod env 
+
+> docker hub .  ( iis)  --
+
+> container is just a process, docker ps, 
+> container is just a process, google ( julia evans )
+> docker exec -it testconn1 bash 
+    > inside 
+	> service nginx status
+	> service nginx stop 
+
+> no value for an IP Address: 
+    - container has only one service, but can have more services but more risk process. 
+
+::: Dockerfile Reference ( google )
+	- dockerfile youtube video (takacsmark )
+
+Dockerfile: 
+	- to build a docker image 
+	- FROM, MAINTAINER, RUN, COPY, ADD, CMD, ENTRYPOING, EXPOSE,
+	- ENG, ARG 
+
+> mv Dockerfile Dockerfile_old	
+	- github maverick202 dockertest1 blob master Dockerfile
+> nano Dockerfile 
+	+	FROM  nginx:latest ( Base Image ) or 
+	+	FROM  ubuntu:18.04
+
+
+	+ 	MAINTAINER/ LABEL  "OWNER"="HARSHA"
+	+	LABEL "EMAIL"="amil@email.com"
+
+install nginx in Ubuntu:18.04
+	+ 	RUN apt update 
+	+ 	RUN apt install -y nginx net-tools iputils-ping unzip curl wget 
+
+	or 
+	+ 	RUN apt update \	
+		&&  apt install -y nginx net-tools iputils-ping unzip curl wget 
+
+	+  	COPY index.html /var/www/html/index.nginx-debian.html
+	+ 	COPY scorekeeper.js /var/www/html/scorekeeper.js 
+	+ 	COPY style.css /var/www/html/style.css
+
+	
+ADD has an extra feature can download from URL
+	+ 	ADD https:/URL   ( remote to local download )
+
+	+ 	RUN unzip tarxxxxxxxxxxxx.zip
+	+ 	RUN chmod 7000 terraform
+	+	RUN ./terraform version 
+
+> DOCKER build -t sreeharshav/dockerfile:v1
+
+QA :
+	do they need images from repositories : 
+		- they have internal repositories.'		
+		- Azure Devops 
+		- github 
+	- download the image from official ubuntu / 
+	- keep it in official repository 
+
+===CMD vs entrypoint ====
+ to start a container: 
+	-  mv Dockerfile v1_Dockerfile
+	- nano Dockerfile 
+		- FROM ubuntu:18.04
+		- 
+		- RUN apt update && apt install -y iputils-ping net-tools
+		- CMD ["/bin/bash", "-c", "ping www.google.com"]
+
+> docker build -t sreeharshav/cmd:v1 . 
+> docker run --rm -itd  sreeharshav/cmd:v1
+> docker run --rm -it sreesharshav/cmd:v1
+> docker stop CID
+
+>Check Entry Point : 
+  	- nano Dockerfile 
+		- ENTRYPOINT ["/bin/bash", "-c", "ping www.google.com"]
+
+> docker build -t sreeharsha/ent:v1
+> ENTRYPOINT VS CMD 
+
+> docker run --rm -it sreeharshav/cmd:v1 ping www.yahoo.com
+	- CMD can be overwritten  CMD line argument 
+> docker run --rm -it sreeharshav/ent:v1 ping www.yahoo.com
+	- ENTRYPOINT does not replace CMD line argument 
+
+> How can we use both ?
+	- nano Dockerfile
+	   - ENTRYPOINT ["/bin/bash","-c","ping"]
+	   - CMD ["www.google.com"]
+
+> docker build -t sreeharshav/ent:v2 .
+
+
+EXPOSE :
+
+ nginx:
+	- EXPOSE 80
+
+> docker images
+> docker run --rm -itd sreesharshav/k8snginx:v2
+> docker ps 
+
+
+> nano Dockerfile
+	+ add
+		- CMD["nginx","-g", "daemon off;"]
+> Docker build -t sreeharshav/k8snginx:v3 . 
+> Docker images 
+> docker run --rm -itd sreeharshav/k8s:v3 . 
+> docker stop CID
+ - -p can't be used 
+>  docker build  -t sreesharsha/vk8s:v4 . 
+> docker run -itd --rm sreeharsha/vk8s:v4
+> docker ps 
+
+> docker inspect cID
+> curl 172.17.0.2:80
+> docker ps 
+
+NOTE: nginx always be running @80 Port 
+ - (-p/P) publish is differnt from expose 
+
+
+> docker stop 
+> docker images 
+> docker run  --rm -itd sree/k8s:v5
+> docker ps 
+> docker inspect  CID | grep -i 172
+
+> curl IP
+	- Application is working
+> only to display the Port of that container 
+> 
+-------------------------------------
+:::to know about the port info without starting the container
+> docker image inspect srre/rool:v5
+> docker image inspect sree/rool:v4
+
+::: publish is only to connect app to the container 
+
+> FEE : 12000/- , 2 x 6000/-, 
+> 9010090444 (SUJANI)
+> +91-9739712741 - Harsha Phone number (1st )
+> + 91-7262986369 - Harsha Phone number  (2nd)
+
+
+2:20
+
+
+
+	
